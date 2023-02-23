@@ -1,0 +1,23 @@
+name: Sync EFS with GitHub repository
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Sync EFS with repository
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        ACCESS_POINT_ARN: ${{ secrets.ACCESS_POINT_ARN }}
+      run: |
+        sudo apt-get update && sudo apt-get install -y nfs-common
+        sudo mkdir /mnt/efs
+        sudo mount -t efs -o tls,iam,accesspoint=${ACCESS_POINT_ARN} / /mnt/efs
+        rsync -av --delete ./ /mnt/efs/
+        sudo umount /mnt/efs
