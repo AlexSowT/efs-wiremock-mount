@@ -19,6 +19,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         ACCESS_POINT_ARN: ${{ secrets.ACCESS_POINT_ARN }}
       run: |
+        echo ${{ secrets.AWS_ACCESS_KEY_ID }}
         sudo mkdir /mnt/efs
         sudo mount -t efs -o tls,iam,accesspoint=${ACCESS_POINT_ARN} / /mnt/efs
         rsync -av --delete ./ /mnt/efs/
